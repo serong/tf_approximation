@@ -119,6 +119,12 @@ public class TransferFunction {
         return formula;
     }
 
+    /**
+     * FOPDT approximation of the transfer function.
+     *
+     * @param skotesgad
+     * @return
+     */
     public TransferFunction fopdt(boolean skotesgad){
 
         if (specialRule) {
@@ -141,7 +147,7 @@ public class TransferFunction {
      *
      * @return TransferFunction
      */
-    public TransferFunction fopdtGen() {
+    private TransferFunction fopdtGen() {
 
         // Initial delay value.
         float newDelay = delay;
@@ -164,7 +170,12 @@ public class TransferFunction {
         return new TransferFunction(gain, newDelay, newZeros, newPoles);
     }
 
-    public TransferFunction fopdtSkotesgad() {
+    /**
+     * Skotesgad method FOPDT approximation.
+     *
+     * @return TransferFunction
+     */
+    private TransferFunction fopdtSkotesgad() {
 
         // We need at least 2 poles for this approximation.
         if (poles.length < 2) {
@@ -188,6 +199,47 @@ public class TransferFunction {
         }
 
         Float[] newPoles = {poles[0] + (poles[1]/2)};
+        Float[] newZeros = {};
+
+        return new TransferFunction(gain, newDelay, newZeros, newPoles);
+    }
+
+    /**
+     * SOPDT approximation done in the Skotesgad method.
+     *
+     * NOTE: If there are less than 3 poles, an FOPDT (Skotesgad) is returned
+     *       because of the way the approximation is implemented.
+     *
+     * @return TransferFunction
+     */
+    public TransferFunction sopdt() {
+
+        if (poles.length < 3) {
+            // First Skotesgad method is tried, if not enough poles
+            // a general approximation is returned by the fopdt method.
+            return fopdt(true);
+        }
+
+        float newDelay = delay;
+
+        // Adding poles to the delay.
+        newDelay += poles[2] / 2;
+
+        // Adding the remainder of poles.
+        int i = 3;
+        while (i < poles.length) {
+            newDelay += poles[i];
+            i++;
+        }
+
+        // Adding the negative zeros to the delay.
+        for (float z : zeros) {
+            newDelay += Math.abs(z);
+        }
+
+        float pole1 = poles[0];
+        float pole2 = poles[1] + (poles[2] / 2);
+        Float[] newPoles = {pole1, pole2};
         Float[] newZeros = {};
 
         return new TransferFunction(gain, newDelay, newZeros, newPoles);
