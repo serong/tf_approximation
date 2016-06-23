@@ -12,6 +12,8 @@
 
 package function;
 
+import java.util.List;
+
 public class SpecialRule {
 
     private TransferFunction tf;
@@ -35,19 +37,19 @@ public class SpecialRule {
         while (tff.getSpecialRule()) {
 
             // Candidates for the approximation attempt.
-            Float[] zeroCandidates = tff.getZeros();
-            float zeroCandidate = 0f;
+            List<Double> zeroCandidates = tff.getZeros();
+            Double zeroCandidate = 0d;
             int zeroCandidateIndex = 0;
 
-            Float[] poleCandidates = tff.getPoles();
-            float poleCandidate = 0.f;
+            List<Double> poleCandidates = tff.getPoles();
+            Double poleCandidate = 0.d;
             int poleCandidateIndex = 0;
 
             // Find the zero candidate.
             int i = 0;
-            while (i < zeroCandidates.length) {
-                if (zeroCandidates[i] > 0) {
-                    zeroCandidate = zeroCandidates[i];
+            while (i < zeroCandidates.size()) {
+                if (zeroCandidates.get(i) > 0) {
+                    zeroCandidate = zeroCandidates.get(i);
                     zeroCandidateIndex = i;
                     break;
                 }
@@ -57,12 +59,12 @@ public class SpecialRule {
 
             // Finding the nearest pole to the candidate zero.
             poleCandidateIndex = nearestPoleIndex(zeroCandidate, tff);
-            poleCandidate = poleCandidates[poleCandidateIndex];
+            poleCandidate = poleCandidates.get(poleCandidateIndex);
 
             // Special rule checks.
             if (cZPD(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
-                float newGain = tff.getGain();
+                double newGain = tff.getGain();
                 newGain *= (zeroCandidate / poleCandidate);
                 tff.setGain(newGain);
 
@@ -71,7 +73,7 @@ public class SpecialRule {
             }
             else if (cZDP(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
-                float newGain = tff.getGain();
+                double newGain = tff.getGain();
                 newGain *= (zeroCandidate / tff.getDelay());
                 tff.setGain(newGain);
 
@@ -85,7 +87,7 @@ public class SpecialRule {
             }
             else if (cPZD(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
-                float newGain = tff.getGain();
+                double newGain = tff.getGain();
                 newGain *= (zeroCandidate / poleCandidate);
                 tff.setGain(newGain);
 
@@ -94,9 +96,9 @@ public class SpecialRule {
             }
             else if (cMin(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
-                float temp = Math.min(poleCandidate, 5*tff.getDelay());
+                double temp = Math.min(poleCandidate, 5*tff.getDelay());
 
-                float newGain = tff.getGain();
+                double newGain = tff.getGain();
                 newGain *= temp;
                 tff.setGain(newGain);
 
@@ -113,7 +115,7 @@ public class SpecialRule {
 
             // Checking for specialRule attribute.
             boolean flag = false;
-            for (float z : tff.getZeros()) {
+            for (Double z : tff.getZeros()) {
                 if (z > 0) {
                     flag = true;
                 }
@@ -136,19 +138,19 @@ public class SpecialRule {
      *
      * @return index value.
      */
-    public int nearestPoleIndex(float zero, TransferFunction tf) {
+    public int nearestPoleIndex(double zero, TransferFunction tf) {
 
         // J: Index.
         int j = 0;
-        float diff = 9999.f;
+        double diff = 9999d;
 
-        Float[] poles = tf.getPoles();
+        List<Double> poles = tf.getPoles();
 
         int i = 0;
-        while (i < poles.length) {
-            if ( Math.abs(zero - poles[i]) < diff) {
+        while (i < poles.size()) {
+            if ( Math.abs(zero - poles.get(i)) < diff) {
                 j = i;
-                diff = Math.abs(zero - poles[i]);
+                diff = Math.abs(zero - poles.get(i));
             }
 
             i++;
@@ -164,44 +166,24 @@ public class SpecialRule {
     http://a-lab.ee/edu/system/files/kristina.vassiljeva/courses/ISS0065/2015_Autumn/
     materials/AV15_L4.pdf
     -------------------------------------------------------------------------------------------- */
-    public boolean cZPD(float delay, float pole, float zero) {
-        double dDelay = (double) delay;
-        double dPole = (double) pole;
-        double dZero = (double) zero;
-
-        return (dZero >= dPole && dPole >= dDelay);
+    public boolean cZPD(double delay, double pole, double zero) {
+        return (zero >= pole && pole >= delay);
     }
 
-    public boolean cZDP(float delay, float pole, float zero) {
-        double dDelay = (double) delay;
-        double dPole = (double) pole;
-        double dZero = (double) zero;
-
-        return (dZero >= dDelay && dDelay >= dPole);
+    public boolean cZDP(double delay, double pole, double zero) {
+        return (zero >= delay && delay >= pole);
     }
 
-    public boolean cDZP(float delay, float pole, float zero) {
-        double dDelay = (double) delay;
-        double dPole = (double) pole;
-        double dZero = (double) zero;
-
-        return (dDelay >= dZero && dZero >= dPole);
+    public boolean cDZP(double delay, double pole, double zero) {
+        return (delay >= zero && zero >= pole);
     }
 
-    public boolean cPZD(float delay, float pole, float zero) {
-        double dDelay = (double) delay;
-        double dPole = (double) pole;
-        double dZero = (double) zero;
-
-        return (dPole >= dZero && dZero >= 5*dDelay);
+    public boolean cPZD(double delay, double pole, double zero) {
+        return (pole >= zero && zero >= 5*delay);
     }
 
-    public boolean cMin(float delay, float pole, float zero) {
-        double dDelay = (double) delay;
-        double dPole = (double) pole;
-        double dZero = (double) zero;
-
-        return (Math.min(dPole, 5*dDelay) >= dZero);
+    public boolean cMin(double delay, double pole, double zero) {
+        return (Math.min(pole, 5*delay) >= zero);
     }
 
     /* --------------------------------------------------------------------------------------------

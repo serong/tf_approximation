@@ -11,13 +11,20 @@
  */
 package function;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TransferFunctionBuilder {
-    private float gain = 1;
-    private float delay = 0;
-    private Float[] zeros = {0f};
-    private Float[] poles = {1f};
 
     public TransferFunction buildTransferFunction() {
-        return new TransferFunction(gain, delay, zeros, poles);
+        double g = 1d;
+        double d = 0d;
+        List<Double> z = new ArrayList<>();
+        z.add(0d);
+
+        List<Double> p = new ArrayList<>();
+        p.add(1d);
+
+        return new TransferFunction(g, d, z, p);
     }
 }

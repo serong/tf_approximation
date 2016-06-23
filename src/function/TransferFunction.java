@@ -19,14 +19,15 @@ import java.util.List;
 
 public class TransferFunction {
 
-    private float gain;
-    private float delay;
-    private Float[] zeros;
-    private Float[] poles;
+    List<Double> zeros;
+    List<Double> poles;
 
     // Flag for special that is applied when there is
     // one or more positive zeros.
     private boolean specialRule;
+
+    private double gain;
+    private double delay;
 
     /**
      * A transfer function should have the following parameters supplied.
@@ -36,24 +37,26 @@ public class TransferFunction {
      * @param zeros     Default: [0]
      * @param poles     Default: [1]
      */
-    public TransferFunction(float gain, float delay, Float[] zeros, Float[] poles) {
+    public TransferFunction(double gain, double delay, List<Double> zeros, List<Double> poles) {
 
         this.delay = Math.abs(delay);
         this.gain = gain;
 
         // Poles are sorted in reverse to make sure the most dominant
         // pole is the first element in the array.
-        Arrays.sort(poles, Collections.reverseOrder());
+        Collections.sort(poles);
+        Collections.reverse(poles);
         this.poles = poles;
 
         // Likewise.
-        Arrays.sort(zeros, Collections.reverseOrder());
+        Collections.sort(zeros);
+        Collections.reverse(zeros);
         this.zeros = zeros;
 
         // Checking for special rule regarding the positive zeros.
         this.specialRule = false;
 
-        for (float zero : zeros) {
+        for (Double zero : zeros) {
             if (zero > 0) {
                 this.specialRule = true;
                 break;
@@ -65,19 +68,19 @@ public class TransferFunction {
     /* --------------------------------------------------------------------------------------------
     GETTERS and SETTERS
     -------------------------------------------------------------------------------------------- */
-    public float getGain() {
+    public Double getGain() {
         return gain;
     }
 
-    public float getDelay() {
+    public Double getDelay() {
         return delay;
     }
 
-    public Float[] getPoles() {
+    public List<Double> getPoles() {
         return poles;
     }
 
-    public Float[] getZeros() {
+    public List<Double> getZeros() {
         return zeros;
     }
 
@@ -85,11 +88,11 @@ public class TransferFunction {
         return specialRule;
     }
 
-    public void setGain(float g) {
+    public void setGain(double g) {
         gain = g;
     }
 
-    public void setDelay(float d) {
+    public void setDelay(double d) {
         delay = d;
     }
 
@@ -103,18 +106,7 @@ public class TransferFunction {
      * @param i zero's index.
      */
     public void removeZero(int i) {
-        List<Float> zeroList = new ArrayList<Float>(Arrays.asList(zeros));
-        zeroList.remove(i);
-
-        Float[] temp = new Float[zeroList.size()];
-
-        int j = 0;
-        while (j < zeroList.size()) {
-            temp[j] = zeroList.get(j);
-            j++;
-        }
-
-        zeros = temp;
+        zeros.remove(i);
     }
 
     /**
@@ -123,18 +115,7 @@ public class TransferFunction {
      * @param i pole's index.
      */
     public void removePole(int i) {
-        List<Float> poleList = new ArrayList<Float>(Arrays.asList(poles));
-        poleList.remove(i);
-
-        Float[] temp = new Float[poleList.size()];
-
-        int j = 0;
-        while (j < poleList.size()) {
-            temp[j] = poleList.get(j);
-            j++;
-        }
-
-        poles = temp;
+        poles.remove(i);
     }
 
     /**
@@ -142,39 +123,24 @@ public class TransferFunction {
      *
      * @param pole the pole.
      */
-    public void addToPoles(float pole) {
-        Float[] temp = new Float[poles.length + 1];
-
-        int i = 0;
-        while (i < poles.length) {
-            temp[i] = poles[i];
-            i++;
-        }
-
-        temp[i] = pole;
-
-        poles = temp;
+    public void addToPoles(Double pole) {
+        poles.add(pole);
     }
 
     /* --------------------------------------------------------------------------------------------
     END: GETTERS and SETTERS
     -------------------------------------------------------------------------------------------- */
 
-    /**
-     * Get information about the transfer function.
-     */
-    public void display(boolean formula) {
+    @Override
+    public String toString() {
+        String result = "Transfer Function parameters: \n" +
+                "-----------------------------\n" +
+                "Gain: \t" + gain + "\n" +
+                "Delay: \t" + delay + "\n" +
+                "Poles: \t" + poles.toString() + "\n" +
+                "Zeros: \t" + zeros.toString() + "\n";
 
-        if (formula) {
-            System.out.println(formula());
-        }
-        else {
-            System.out.println("Gain: \t" + gain);
-            System.out.println("Delay: \t" + delay);
-            System.out.println("Zeros: \t " + Arrays.toString(zeros));
-            System.out.println("Poles: \t " + Arrays.toString(poles));
-        }
-
+        return result;
     }
 
     /**
@@ -182,12 +148,13 @@ public class TransferFunction {
      *
      * @return String
      */
-    public String formula() {
+    public String latex() {
 
         // poles: (1 + 10s)(1+5s)
         String fPoles = "";
         String temp;
-        for (Float p : poles) {
+
+        for (Double p : poles) {
             if (p < 0) {
                 temp = "(1 - " + Math.abs(p) + "s)";
             }
@@ -199,7 +166,7 @@ public class TransferFunction {
 
         // zeros: (1 + 10s)(1 - 3s) etc.
         String fZeros = "";
-        for (Float z : zeros) {
+        for (Double z : zeros) {
             if (z < 0) {
                 temp = "(1 - " + Math.abs(z) + "s)";
             }
@@ -210,11 +177,11 @@ public class TransferFunction {
 
         }
 
-        String fGain = Float.toString(gain);
+        String fGain = Double.toString(gain);
 
         String fDelay = "";
         if (delay > 0) {
-            fDelay = "e^{-" + Float.toString(delay) + "\\tau}";
+            fDelay = "e^{-" + Double.toString(delay) + "\\tau}";
         }
 
         String formula = "W(s) = \\frac{" + fGain + fZeros +"}{" + fPoles + "}" + fDelay;
@@ -254,22 +221,24 @@ public class TransferFunction {
     private TransferFunction fopdtGen() {
 
         // Initial delay value.
-        float newDelay = delay;
+        double newDelay = delay;
 
         // Adding non-dominant poles to the delay.
         int i = 1;
-        while (i < poles.length) {
-            newDelay += poles[i];
+        while (i < poles.size()) {
+            newDelay += poles.get(i);
             i++;
         }
 
         // Adding negative zeros to the delay.
-        for (float z : zeros) {
+        for (Double z : zeros) {
             newDelay += Math.abs(z);
         }
 
-        Float[] newPoles = {poles[0]};
-        Float[] newZeros = {};
+        List<Double> newPoles = new ArrayList<>();
+        newPoles.add(poles.get(0));
+
+        List<Double> newZeros = new ArrayList<>();
 
         return new TransferFunction(gain, newDelay, newZeros, newPoles);
     }
@@ -282,28 +251,30 @@ public class TransferFunction {
     private TransferFunction fopdtSkotesgad() {
 
         // We need at least 2 poles for this approximation.
-        if (poles.length < 2) {
+        if (poles.size() < 2) {
             return fopdtGen();
         }
 
-        float newDelay = delay;
+        double newDelay = delay;
 
         // Adding non-dominant poles to the delay.
-        newDelay += poles[1] / 2;
+        newDelay += poles.get(1) / 2;
 
         int i = 2;
-        while (i < poles.length) {
-            newDelay += poles[i];
+        while (i < poles.size()) {
+            newDelay += poles.get(i);
             i++;
         }
 
         // Adding the zeros to the delay.
-        for (float z : zeros) {
+        for (Double z : zeros) {
             newDelay += Math.abs(z);
         }
 
-        Float[] newPoles = {poles[0] + (poles[1]/2)};
-        Float[] newZeros = {};
+        List<Double> newPoles = new ArrayList<>();
+        newPoles.add(poles.get(0) + (poles.get(1)/2));
+
+        List<Double> newZeros = new ArrayList<>();
 
         return new TransferFunction(gain, newDelay, newZeros, newPoles);
     }
@@ -318,7 +289,7 @@ public class TransferFunction {
      */
     public TransferFunction sopdt() {
 
-        if (poles.length < 3) {
+        if (poles.size() < 3) {
             // First Skotesgad method is tried, if not enough poles
             // a general approximation is returned by the fopdt method.
             return fopdt(true);
@@ -330,27 +301,30 @@ public class TransferFunction {
             return newTf.sopdt();
         }
 
-        float newDelay = delay;
+        double newDelay = delay;
 
         // Adding poles to the delay.
-        newDelay += poles[2] / 2;
+        newDelay += poles.get(2) / 2;
 
         // Adding the remainder of poles.
         int i = 3;
-        while (i < poles.length) {
-            newDelay += poles[i];
+        while (i < poles.size()) {
+            newDelay += poles.get(i);
             i++;
         }
 
         // Adding the negative zeros to the delay.
-        for (float z : zeros) {
+        for (Double z : zeros) {
             newDelay += Math.abs(z);
         }
 
-        float pole1 = poles[0];
-        float pole2 = poles[1] + (poles[2] / 2);
-        Float[] newPoles = {pole1, pole2};
-        Float[] newZeros = {};
+        Double pole1 = poles.get(0);
+        Double pole2 = poles.get(1) + (poles.get(2) / 2);
+        List<Double> newPoles = new ArrayList<>();
+        newPoles.add(pole1);
+        newPoles.add(pole2);
+
+        List<Double> newZeros = new ArrayList<>();
 
         return new TransferFunction(gain, newDelay, newZeros, newPoles);
     }
