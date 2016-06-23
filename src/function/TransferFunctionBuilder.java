@@ -2,13 +2,12 @@
  *  TransferFunctionBuilder.java
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- *  TODO: Javadoc explanations.
- *  Description:     This class deals with creating TransferFunction object
- *                   with default values.
+ *  @Description:     This class deals with creating TransferFunction object
+ *                    with default values.
  *
- *  Created:         2016.06.22
- *  Updated:         2016.06.23
- *  Author:          github/serong
+ *  @Created:         2016.06.22
+ *  @Updated:         2016.06.23
+ *  @Author:          github/serong
  */
 package function;
 

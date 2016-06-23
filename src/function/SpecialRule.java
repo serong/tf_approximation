@@ -2,13 +2,12 @@
  *  SpecialRule.java
  *  ~~~~~~~~~~~~~~~~
  *
- *  TODO: Javadoc explanations.
- *  Description:     This class handles the Special Rule that happens when there
- *                   positive zeros.
+ *  @Description:     This class handles the Special Rule that happens when there
+ *                    positive zeros.
  *
- *  Created:         2016.06.23
- *  Updated:         2016.06.23
- *  Author:          github/serong
+ *  @Created:         2016.06.23
+ *  @Updated:         2016.06.23
+ *  @Author:          github/serong
  */
 
 package function;

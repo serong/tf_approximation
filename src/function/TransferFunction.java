@@ -2,13 +2,12 @@
  *  TransferFunction.java
  *  ~~~~~~~~~~~~~~~~~~~~~
  *
- *  TODO: Javadoc explanations.
- *  Description:     This class deals with Transfer Function and its
- *                   approximations.
+ *  @Description:     This class deals with Transfer Function and its
+ *                    approximations.
  *
- *  Created:         2016.06.22
- *  Updated:         2016.06.23
- *  Author:          github/serong
+ *  @Created:         2016.06.22
+ *  @Updated:         2016.06.23
+ *  @Author:          github/serong
  */
 
 package function;
