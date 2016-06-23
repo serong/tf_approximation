@@ -124,7 +124,7 @@ public class SpecialRule {
                 tff.addToPoles(Math.abs(poleCandidate-zeroCandidate));
             }
             else {
-                // This shouldn't happen.
+                // This shouldn't happen... but just in case. :)
 
                 // TODO: Remove
                 System.out.println("@SPEC: \t >>> This SHOULDN'T have happened.");
