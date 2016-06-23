@@ -13,6 +13,8 @@
 
 package function;
 
+import java.lang.reflect.Array;
+
 public class SpecialRule {
 
     private TransferFunction tf;
@@ -70,7 +72,64 @@ public class SpecialRule {
                 float newGain = tff.getGain();
                 newGain *= (zeroCandidate / poleCandidate);
                 tff.setGain(newGain);
+
                 tff.removePole(poleCandidateIndex);
+                tff.removeZero(zeroCandidateIndex);
+            }
+            else if (cZDP(tff.getDelay(), poleCandidate, zeroCandidate)) {
+
+                // TODO: Remove
+                System.out.println("@SPEC: \t >>> ZDP rule is used.");
+
+                float newGain = tff.getGain();
+                newGain *= (zeroCandidate / tff.getDelay());
+                tff.setGain(newGain);
+
+                tff.removePole(poleCandidateIndex);
+                tff.removeZero(zeroCandidateIndex);
+            }
+            else if (cDZP(tff.getDelay(), poleCandidate, zeroCandidate)) {
+
+                // TODO: Remove
+                System.out.println("@SPEC: \t >>> DZP rule is used.");
+
+                tff.removePole(poleCandidateIndex);
+                tff.removeZero(zeroCandidateIndex);
+            }
+            else if (cPZD(tff.getDelay(), poleCandidate, zeroCandidate)) {
+
+                // TODO: Remove
+                System.out.println("@SPEC: \t >>> PZD rule is used.");
+
+                float newGain = tff.getGain();
+                newGain *= (zeroCandidate / poleCandidate);
+                tff.setGain(newGain);
+
+                tff.removePole(poleCandidateIndex);
+                tff.removeZero(zeroCandidateIndex);
+            }
+            else if (cMin(tff.getDelay(), poleCandidate, zeroCandidate)) {
+
+                // TODO: Remove
+                System.out.println("@SPEC: \t >>> MIN rule is used.");
+
+                float temp = Math.min(poleCandidate, 5*tff.getDelay());
+
+                float newGain = tff.getGain();
+                newGain *= temp;
+                tff.setGain(newGain);
+
+                tff.removePole(poleCandidateIndex);
+                tff.removeZero(zeroCandidateIndex);
+                tff.addToPoles(Math.abs(poleCandidate-zeroCandidate));
+            }
+            else {
+                // This shouldn't happen.
+
+                // TODO: Remove
+                System.out.println("@SPEC: \t >>> This SHOULDN'T have happened.");
+
+                // FIXME: Just removing the zero is not the right solution.
                 tff.removeZero(zeroCandidateIndex);
             }
 

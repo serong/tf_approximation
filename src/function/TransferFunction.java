@@ -141,6 +141,25 @@ public class TransferFunction {
         poles = temp;
     }
 
+    /**
+     * Add given pole to the poles.
+     *
+     * @param pole the pole.
+     */
+    public void addToPoles(float pole) {
+        Float[] temp = new Float[poles.length + 1];
+
+        int i = 0;
+        while (i < poles.length) {
+            temp[i] = poles[i];
+            i++;
+        }
+
+        temp[i] = pole;
+
+        poles = temp;
+    }
+
     /* --------------------------------------------------------------------------------------------
     END: GETTERS and SETTERS
     -------------------------------------------------------------------------------------------- */
