@@ -12,8 +12,6 @@
 
 package function;
 
-import java.lang.reflect.Array;
-
 public class SpecialRule {
 
     private TransferFunction tf;
@@ -21,7 +19,6 @@ public class SpecialRule {
     public SpecialRule(TransferFunction tFunc) {
         tf = tFunc;
     }
-
 
     /**
      * Get the new Transfer Function after Special Rule approximation.
