@@ -3,6 +3,7 @@ package function;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Transfer function class.
@@ -34,6 +35,7 @@ public class TransferFunction {
      * @param poles     Default: [1]
      */
     public TransferFunction(float gain, float delay, Float[] zeros, Float[] poles) {
+
         // TODO: Check for delay >= 0
         this.delay = delay;
         this.gain = gain;
@@ -49,13 +51,96 @@ public class TransferFunction {
 
         // Checking for special rule regarding the positive zeros.
         this.specialRule = false;
+
         for (float zero : zeros) {
             if (zero > 0) {
                 this.specialRule = true;
                 break;
             }
         }
+
+        // TODO: Remove
+        System.out.println("@SPEC: \t >>> TF Special Rule: " + specialRule);
     }
+
+    /* --------------------------------------------------------------------------------------------
+    GETTERS and SETTERS
+    -------------------------------------------------------------------------------------------- */
+    public float getGain() {
+        return gain;
+    }
+
+    public float getDelay() {
+        return delay;
+    }
+
+    public Float[] getPoles() {
+        return poles;
+    }
+
+    public Float[] getZeros() {
+        return zeros;
+    }
+
+    public boolean getSpecialRule() {
+        return specialRule;
+    }
+
+    public void setGain(float g) {
+        gain = g;
+    }
+
+    public void setDelay(float d) {
+        delay = d;
+    }
+
+    public void setSpecialRule(boolean b) {
+        specialRule = b;
+    }
+
+    /**
+     * Remove a zero from the zeros list.
+     *
+     * @param i zero's index.
+     */
+    public void removeZero(int i) {
+        List<Float> zeroList = new ArrayList<Float>(Arrays.asList(zeros));
+        zeroList.remove(i);
+
+        Float[] temp = new Float[zeroList.size()];
+
+        int j = 0;
+        while (j < zeroList.size()) {
+            temp[j] = zeroList.get(j);
+            j++;
+        }
+
+        zeros = temp;
+    }
+
+    /**
+     * Remove a pole from the poles list.
+     *
+     * @param i pole's index.
+     */
+    public void removePole(int i) {
+        List<Float> poleList = new ArrayList<Float>(Arrays.asList(poles));
+        poleList.remove(i);
+
+        Float[] temp = new Float[poleList.size()];
+
+        int j = 0;
+        while (j < poleList.size()) {
+            temp[j] = poleList.get(j);
+            j++;
+        }
+
+        poles = temp;
+    }
+
+    /* --------------------------------------------------------------------------------------------
+    END: GETTERS and SETTERS
+    -------------------------------------------------------------------------------------------- */
 
     /**
      * Get information about the transfer function.
@@ -128,8 +213,12 @@ public class TransferFunction {
     public TransferFunction fopdt(boolean skotesgad){
 
         if (specialRule) {
-            // TODO: Implement.
-            return this;
+
+            TransferFunction newTf = new SpecialRule(this).newTf();
+
+            // TODO: Remove.
+            System.out.println("@SPEC: \t >>> New TF is returned.");
+            return newTf.fopdt(skotesgad);
         }
         else {
             if (skotesgad) {
@@ -218,6 +307,14 @@ public class TransferFunction {
             // First Skotesgad method is tried, if not enough poles
             // a general approximation is returned by the fopdt method.
             return fopdt(true);
+        }
+
+        if (specialRule) {
+            TransferFunction newTf = new SpecialRule(this).newTf();
+
+            // TODO: Remove.
+            System.out.println("@SPEC: \t >>> New TF is returned.");
+            return newTf.sopdt();
         }
 
         float newDelay = delay;
