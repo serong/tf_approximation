@@ -1,8 +1,18 @@
+/**
+ *  SpecialRule.java
+ *  ~~~~~~~~~~~~~~~~
+ *
+ *  TODO: Javadoc explanations.
+ *  Description:     This class handles the Special Rule that happens when there
+ *                   positive zeros.
+ *
+ *  Created:         2016.06.23
+ *  Updated:         2016.06.23
+ *  Author:          github/serong
+ */
+
 package function;
 
-/**
- * Created by xserkan on 23.06.2016.
- */
 public class SpecialRule {
 
     private TransferFunction tf;
@@ -19,13 +29,14 @@ public class SpecialRule {
      */
     public TransferFunction newTf() {
 
+        // Temporary transfer function.
         TransferFunction tff = tf;
 
-        // TODO: Remove
-        System.out.println("@SPEC: \t >>> TFF SpecialRule - " + tff.getSpecialRule());
-
+        // Approximate while specialRule attribute is true.
+        // FIXME: Might cause some issues when there are more than 1 positive zeros.
         while (tff.getSpecialRule()) {
 
+            // Candidates for the approximation attempt.
             Float[] zeroCandidates = tff.getZeros();
             float zeroCandidate = 0f;
             int zeroCandidateIndex = 0;
@@ -34,8 +45,8 @@ public class SpecialRule {
             float poleCandidate = 0.f;
             int poleCandidateIndex = 0;
 
+            // Find the zero candidate.
             int i = 0;
-
             while (i < zeroCandidates.length) {
                 if (zeroCandidates[i] > 0) {
                     zeroCandidate = zeroCandidates[i];
@@ -46,10 +57,11 @@ public class SpecialRule {
                 i++;
             }
 
-            // Finding the nearest
+            // Finding the nearest pole to the candidate zero.
             poleCandidateIndex = nearestPoleIndex(zeroCandidate, tff);
             poleCandidate = poleCandidates[poleCandidateIndex];
 
+            // Special rule checks.
             if (cZPD(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
                 // TODO: Remove
@@ -62,44 +74,51 @@ public class SpecialRule {
                 tff.removeZero(zeroCandidateIndex);
             }
 
-            // Special rule check.
+            // Checking for specialRule attribute.
             boolean flag = false;
             for (float z : tff.getZeros()) {
                 if (z > 0) {
                     flag = true;
 
                     // TODO: Remove
-                    System.out.println("A new positive zero.");
+                    System.out.println("@SPEC: \t >>> A new positive zero is found.");
                 }
-
             }
-
-
             tff.setSpecialRule(flag);
 
             // TODO: Remove
-            System.out.println("WHILE:");
+            System.out.println("@SPEC \t >>> WHILE loop.");
         }
 
+        // After all this, specialRule should be set to false.
+        // FIXME: Most likely redundant.
         tff.setSpecialRule(false);
 
         // TODO: Remove
-        System.out.println("Setting special to false.");
+        System.out.println("@SPEC: \t >>> Returning new TF.");
 
         return tff;
     }
 
+    /**
+     * Given a zero, find the nearest pole candidate index.
+     *
+     * @param zero zero.
+     * @param tf transfer function.
+     *
+     * @return index value.
+     */
     public int nearestPoleIndex(float zero, TransferFunction tf) {
-        int i = 0;
+
+        // J: Index.
         int j = 0;
         float diff = 9999.f;
-        float poleCandidate = 0f;
 
         Float[] poles = tf.getPoles();
 
+        int i = 0;
         while (i < poles.length) {
             if ( Math.abs(zero - poles[i]) < diff) {
-                poleCandidate = poles[i];
                 j = i;
                 diff = Math.abs(zero - poles[i]);
             }
@@ -110,7 +129,13 @@ public class SpecialRule {
         return j;
     }
 
-    // Comparation helpers.
+    /* --------------------------------------------------------------------------------------------
+    SPECIAL RULE HELPERS
+
+    For reference:
+    http://a-lab.ee/edu/system/files/kristina.vassiljeva/courses/ISS0065/2015_Autumn/
+    materials/AV15_L4.pdf
+    -------------------------------------------------------------------------------------------- */
     public boolean cZPD(float delay, float pole, float zero) {
         double dDelay = (double) delay;
         double dPole = (double) pole;
@@ -150,4 +175,8 @@ public class SpecialRule {
 
         return (Math.min(dPole, 5*dDelay) >= dZero);
     }
+
+    /* --------------------------------------------------------------------------------------------
+    END: SPECIAL RULE HELPERS
+    -------------------------------------------------------------------------------------------- */
 }

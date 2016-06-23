@@ -1,3 +1,16 @@
+/**
+ *  TransferFunction.java
+ *  ~~~~~~~~~~~~~~~~~~~~~
+ *
+ *  TODO: Javadoc explanations.
+ *  Description:     This class deals with Transfer Function and its
+ *                   approximations.
+ *
+ *  Created:         2016.06.22
+ *  Updated:         2016.06.23
+ *  Author:          github/serong
+ */
+
 package function;
 
 import java.util.ArrayList;
@@ -5,16 +18,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Transfer function class.
- *
- * TODO: Javadoc explanations.
- * Description:     This class deals with Transfer Function and its
- *                  approximations.
- * Created:         2016.06.22
- * Updated:         2016.06.22
- * Author:          github/serong
- */
 public class TransferFunction {
 
     private float gain;
