@@ -62,9 +62,6 @@ public class SpecialRule {
             // Special rule checks.
             if (cZPD(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
-                // TODO: Remove
-                System.out.println("@SPEC: \t >>> ZPD rule is used.");
-
                 float newGain = tff.getGain();
                 newGain *= (zeroCandidate / poleCandidate);
                 tff.setGain(newGain);
@@ -73,9 +70,6 @@ public class SpecialRule {
                 tff.removeZero(zeroCandidateIndex);
             }
             else if (cZDP(tff.getDelay(), poleCandidate, zeroCandidate)) {
-
-                // TODO: Remove
-                System.out.println("@SPEC: \t >>> ZDP rule is used.");
 
                 float newGain = tff.getGain();
                 newGain *= (zeroCandidate / tff.getDelay());
@@ -86,16 +80,10 @@ public class SpecialRule {
             }
             else if (cDZP(tff.getDelay(), poleCandidate, zeroCandidate)) {
 
-                // TODO: Remove
-                System.out.println("@SPEC: \t >>> DZP rule is used.");
-
                 tff.removePole(poleCandidateIndex);
                 tff.removeZero(zeroCandidateIndex);
             }
             else if (cPZD(tff.getDelay(), poleCandidate, zeroCandidate)) {
-
-                // TODO: Remove
-                System.out.println("@SPEC: \t >>> PZD rule is used.");
 
                 float newGain = tff.getGain();
                 newGain *= (zeroCandidate / poleCandidate);
@@ -105,9 +93,6 @@ public class SpecialRule {
                 tff.removeZero(zeroCandidateIndex);
             }
             else if (cMin(tff.getDelay(), poleCandidate, zeroCandidate)) {
-
-                // TODO: Remove
-                System.out.println("@SPEC: \t >>> MIN rule is used.");
 
                 float temp = Math.min(poleCandidate, 5*tff.getDelay());
 
@@ -122,9 +107,6 @@ public class SpecialRule {
             else {
                 // This shouldn't happen... but just in case. :)
 
-                // TODO: Remove
-                System.out.println("@SPEC: \t >>> This SHOULDN'T have happened.");
-
                 // FIXME: Just removing the zero is not the right solution.
                 tff.removeZero(zeroCandidateIndex);
             }
@@ -134,23 +116,14 @@ public class SpecialRule {
             for (float z : tff.getZeros()) {
                 if (z > 0) {
                     flag = true;
-
-                    // TODO: Remove
-                    System.out.println("@SPEC: \t >>> A new positive zero is found.");
                 }
             }
             tff.setSpecialRule(flag);
-
-            // TODO: Remove
-            System.out.println("@SPEC \t >>> WHILE loop.");
         }
 
         // After all this, specialRule should be set to false.
         // FIXME: Most likely redundant.
         tff.setSpecialRule(false);
-
-        // TODO: Remove
-        System.out.println("@SPEC: \t >>> Returning new TF.");
 
         return tff;
     }

@@ -38,8 +38,7 @@ public class TransferFunction {
      */
     public TransferFunction(float gain, float delay, Float[] zeros, Float[] poles) {
 
-        // TODO: Check for delay >= 0
-        this.delay = delay;
+        this.delay = Math.abs(delay);
         this.gain = gain;
 
         // Poles are sorted in reverse to make sure the most dominant
@@ -61,8 +60,6 @@ public class TransferFunction {
             }
         }
 
-        // TODO: Remove
-        System.out.println("@SPEC: \t >>> TF Special Rule: " + specialRule);
     }
 
     /* --------------------------------------------------------------------------------------------
@@ -228,17 +225,14 @@ public class TransferFunction {
     /**
      * FOPDT approximation of the transfer function.
      *
-     * @param skotesgad
-     * @return
+     * @param skotesgad whether S will be used or not.
+     * @return TransferFunction
      */
     public TransferFunction fopdt(boolean skotesgad){
 
         if (specialRule) {
-
             TransferFunction newTf = new SpecialRule(this).newTf();
 
-            // TODO: Remove.
-            System.out.println("@SPEC: \t >>> New TF is returned.");
             return newTf.fopdt(skotesgad);
         }
         else {
@@ -333,8 +327,6 @@ public class TransferFunction {
         if (specialRule) {
             TransferFunction newTf = new SpecialRule(this).newTf();
 
-            // TODO: Remove.
-            System.out.println("@SPEC: \t >>> New TF is returned.");
             return newTf.sopdt();
         }
 
